@@ -34,6 +34,8 @@ public class AdminController {
     public String adminPage(@AuthenticationPrincipal User admin, Model model) {
         model.addAttribute("admin", admin);
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("newUser", new User());
+        model.addAttribute("allRoles", roleRepository.findAll());
         return "admin";
     }
 
@@ -43,19 +45,17 @@ public class AdminController {
         return "add_user_form";
     }
 
-    @PostMapping("/add")
-    public String addUser(@RequestParam String username,
-                          @RequestParam String password,
-                          @RequestParam String firstName,
-                          @RequestParam String lastName,
-                          @RequestParam String email,
-                          @RequestParam(name = "roles") List<String> roles) {
+    @PostMapping
+    public String addUser(@ModelAttribute("newUser") User user,
+                          @RequestParam("roles") List<Long> roleIds) {
 
-        Set<Role> roleSet = roles.stream()
-                .map(roleRepository::findByName)
+        Set<Role> roles = roleIds.stream()
+                .map(roleRepository::getById)
                 .collect(Collectors.toSet());
 
-        User user = new User(null, username, password, firstName, lastName, email, roleSet);
+        user.setRoles(roles);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         userService.add(user);
         return "redirect:/admin";
     }
@@ -72,6 +72,7 @@ public class AdminController {
                              @RequestParam String password,
                              @RequestParam String firstName,
                              @RequestParam String lastName,
+                             @RequestParam Integer age,
                              @RequestParam String email,
                              @RequestParam List<String> roles) {
 
@@ -79,7 +80,7 @@ public class AdminController {
                 .map(roleRepository::findByName)
                 .collect(Collectors.toSet());
 
-        User user = new User(id, username, passwordEncoder.encode(password), firstName, lastName, email, roleSet);
+        User user = new User(id, username, passwordEncoder.encode(password), firstName, lastName, age, email, roleSet);
         userService.update(user);
         return "redirect:/admin";
     }
