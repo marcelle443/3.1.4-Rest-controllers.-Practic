@@ -86,11 +86,24 @@ public class AdminController {
                              @RequestParam String email,
                              @RequestParam List<String> roles) {
 
+        User user = userService.getUserById(id);
+
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setAge(age);
+        user.setEmail(email);
+
+
         Set<Role> roleSet = roles.stream()
+                .map(r -> "ROLE_" + r.replace("ROLE_", "").toUpperCase())
                 .map(roleRepository::findByName)
+                .filter(role -> role != null)
                 .collect(Collectors.toSet());
 
-        User user = new User(id, username, passwordEncoder.encode(password), firstName, lastName, age, email, roleSet);
+        user.setRoles(roleSet);
+
         userService.update(user);
         return "redirect:/admin";
     }
