@@ -32,8 +32,18 @@ public class AdminController {
 
     @GetMapping
     public String adminPage(@AuthenticationPrincipal User admin, Model model) {
+        List<User> users = userService.getAllUsers();
+
+        // Добавим каждому пользователю строку ролей
+        users.forEach(user -> {
+            String roleNames = user.getRoles().stream()
+                    .map(r -> r.getName().replace("ROLE_", ""))
+                    .collect(Collectors.joining(", "));
+            user.setRoleString(roleNames);
+        });
+
         model.addAttribute("admin", admin);
-        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("users", users);
         model.addAttribute("newUser", new User());
         model.addAttribute("allRoles", roleRepository.findAll());
         return "admin";
@@ -85,9 +95,11 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @PostMapping("/delete")
-    public String deleteUser(@RequestParam("id") Long id) {
+    @PostMapping("/delete/{id}")
+    public String deleteUser(@PathVariable("id") Long id) {
         userService.delete(id);
         return "redirect:/admin";
+
     }
 }
+
