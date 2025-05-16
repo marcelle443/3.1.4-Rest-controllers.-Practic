@@ -30,28 +30,7 @@ public class UserServiceImp implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public void add(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDao.add(user);
-    }
 
-    @Override
-    public void update(User updatedUser) {
-        User existingUser = userDao.getUserById(updatedUser.getId());
-
-        if (!updatedUser.getPassword().isEmpty()) {
-            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-        }
-
-        existingUser.setUsername(updatedUser.getUsername());
-        existingUser.setFirstName(updatedUser.getFirstName());
-        existingUser.setLastName(updatedUser.getLastName());
-        existingUser.setAge(updatedUser.getAge());
-        existingUser.setEmail(updatedUser.getEmail());
-
-        saveRolesAndUser(existingUser, updatedUser.getRoles());
-    }
 
     @Override
     public void delete(Long id) {
@@ -68,6 +47,58 @@ public class UserServiceImp implements UserService {
         return userDao.getUserById(id);
     }
 
+    @Override
+    public void addWithRoles(User user, List<Long> roleIds) {
+        Set<Role> roles = roleIds.stream()
+                .map(roleRepository::getById)
+                .collect(Collectors.toSet());
+
+        user.setRoles(roles);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        userDao.add(user);
+    }
+
+    @Override
+    public void updateWithRoles(User user, List<Long> roleIds) {
+        User existingUser = userDao.getUserById(user.getId());
+
+        existingUser.setUsername(user.getUsername());
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setAge(user.getAge());
+
+        //  хешировать пароль только если поле заполнено!
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
+        Set<Role> roles = roleIds.stream()
+                .map(roleRepository::getById)
+                .collect(Collectors.toSet());
+        existingUser.setRoles(roles);
+
+        userDao.update(existingUser);
+    }
+
+    @Override
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
+    }
+
+    @Override
+    public List<User> getAllUsersWithRoleString() {
+        List<User> users = getAllUsers();
+        for (User u : users) {
+            String roleString = u.getRoles().stream()
+                    .map(role -> role.getName().replace("ROLE_", ""))
+                    .collect(Collectors.joining(" "));
+            u.setRoleString(roleString);
+        }
+        return users;
+    }
 
 
     private void encodePassword(User user) {
@@ -81,4 +112,5 @@ public class UserServiceImp implements UserService {
         user.setRoles(validRoles);
         userDao.update(user); // или userDao.add(), в зависимости от случая
     }
+
 }

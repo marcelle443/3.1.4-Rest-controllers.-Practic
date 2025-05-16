@@ -67,13 +67,13 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#editModal"
                                         th:attr="data-id=${user.id},
-                                                 data-username=${user.username},
-                                                 data-password='',
-                                                 data-firstname=${user.firstName},
-                                                 data-lastname=${user.lastName},
-                                                 data-age=${user.age},
-                                                 data-email=${user.email},
-                                                 data-roles=${user.roleString}">
+                 data-username=${user.username},
+                 data-password='',
+                 data-firstname=${user.firstName},
+                 data-lastname=${user.lastName},
+                 data-age=${user.age},
+                 data-email=${user.email},
+                 data-roles=${user.roleString}">
                                     Edit
                                 </button>
                             </td>
@@ -137,8 +137,10 @@
                 <div class="mb-2">
                     <label>Roles</label>
                     <select multiple id="edit-roles" name="roles" class="form-select">
-                        <option>ADMIN</option>
-                        <option>USER</option>
+                        <option th:each="role : ${allRoles}"
+                                th:value="${role.id}"
+                                th:text="${role.name.replace('ROLE_', '')}">
+                        </option>
                     </select>
                 </div>
             </div>
@@ -191,7 +193,7 @@
         document.getElementById('edit-age').value = button.getAttribute('data-age');
         document.getElementById('edit-email').value = button.getAttribute('data-email');
 
-        const roles = button.getAttribute('data-roles');
+        const roles = button.getAttribute('data-roles').split(' '); // 'ADMIN USER'
         const roleSelect = document.getElementById('edit-roles');
         for (let option of roleSelect.options) {
             option.selected = roles.includes(option.text.trim());
