@@ -36,13 +36,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/", "/index","/login").permitAll()
+                .antMatchers("/", "/index", "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    .loginPage("/login")
-                    .successHandler(successUserHandler)
-                    .permitAll()
+                .loginPage("/login")
+                .successHandler(successUserHandler)
+                .permitAll()
                 .and()
                 .logout()
                 .permitAll();
@@ -52,18 +52,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
     }
-
-    // аутентификация inMemory
-//    @Bean
-//    @Override
-//    public UserDetailsService userDetailsService() {
-//        UserDetails user =
-//                User.withDefaultPasswordEncoder()
-//                        .username("user")
-//                        .password("user")
-//                        .roles("USER")
-//                        .build();
-//
-//        return new InMemoryUserDetailsManager(user);
-//    }
 }
+
