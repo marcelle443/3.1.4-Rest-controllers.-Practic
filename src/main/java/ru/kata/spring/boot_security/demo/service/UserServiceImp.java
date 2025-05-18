@@ -42,10 +42,6 @@ public class UserServiceImp implements UserService {
         return userDao.getAllUsers();
     }
 
-    @Override
-    public User getUserById(Long id) {
-        return userDao.getUserById(id);
-    }
 
     @Override
     public void addWithRoles(User user, List<Long> roleIds) {
@@ -84,11 +80,6 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
-    }
-
-    @Override
     public List<User> getAllUsersWithRoleString() {
         List<User> users = getAllUsers();
         for (User u : users) {
@@ -98,19 +89,6 @@ public class UserServiceImp implements UserService {
             u.setRoleString(roleString);
         }
         return users;
-    }
-
-
-    private void encodePassword(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-    }
-
-    private void saveRolesAndUser(User user, Set<Role> roles) {
-        Set<Role> validRoles = roles.stream()
-                .map(role -> roleRepository.getById(role.getId()))
-                .collect(Collectors.toSet());
-        user.setRoles(validRoles);
-        userDao.update(user); // или userDao.add(), в зависимости от случая
     }
 
 }
