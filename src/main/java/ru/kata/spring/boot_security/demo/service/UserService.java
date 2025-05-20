@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserService {
 
 
-    void delete(Long id);
+    void deleteUser(Long id);
 
     List<User> getAllUsers();
 

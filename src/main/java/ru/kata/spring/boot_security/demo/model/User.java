@@ -42,6 +42,7 @@ public class User implements UserDetails {
     private Set<Role> roles;
 
 private String roleString;
+
 public String getRoleString() {
     return roleString;
 }

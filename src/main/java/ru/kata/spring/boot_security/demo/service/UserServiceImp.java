@@ -33,7 +33,7 @@ public class UserServiceImp implements UserService {
 
 
     @Override
-    public void delete(Long id) {
+    public void deleteUser(Long id) {
         userRepo.deleteById(id);
     }
 
