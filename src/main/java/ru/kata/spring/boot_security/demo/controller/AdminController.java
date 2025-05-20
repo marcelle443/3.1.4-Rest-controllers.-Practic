@@ -36,14 +36,14 @@ public class AdminController {
     @PostMapping
     public String addUser(@ModelAttribute("newUser") User user,
                           @RequestParam("roles") List<Long> roleIds) {
-        userService.addWithRoles(user, roleIds);
+        userService.saveUser(user, roleIds);
         return "redirect:/admin";
     }
 
     @PostMapping("/update")
     public String updateUser(@ModelAttribute User user,
                              @RequestParam("roles") List<Long> roleIds) {
-        userService.updateWithRoles(user, roleIds);
+        userService.updateUser(user, roleIds);
         return "redirect:/admin";
     }
 

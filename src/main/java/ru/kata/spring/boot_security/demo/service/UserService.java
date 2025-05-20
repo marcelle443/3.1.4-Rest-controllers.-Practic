@@ -13,9 +13,9 @@ public interface UserService {
     List<User> getAllUsers();
 
 
-    void addWithRoles(User user, List<Long> roleIds);
+    void saveUser(User user, List<Long> roleIds);
 
-    void updateWithRoles(User user, List<Long> roleIds);
+    void updateUser(User user, List<Long> roleIds);
 
     List<User> getAllUsersWithRoleString();
 
