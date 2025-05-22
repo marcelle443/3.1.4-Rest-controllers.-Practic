@@ -34,7 +34,7 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -42,6 +42,7 @@ public class User implements UserDetails {
     private Set<Role> roles;
 
 private String roleString;
+
 public String getRoleString() {
     return roleString;
 }
